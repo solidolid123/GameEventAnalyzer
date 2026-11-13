@@ -28,7 +28,7 @@ public sealed class ProjectService
     {
         // TODO: перенесите предметную логику в отдельные методы и классы.
         // TODO: не размещайте весь проект в Main.
-        // TODO 1: Создать модель игрового события. (ВЫПОЛНЕНО)
+        // TODO 1: Создать модель игрового события.
         var sampleEvent = new GameEvent(
             Id: Guid.Empty,
             Timestamp: DateTime.Now,
@@ -39,6 +39,8 @@ public sealed class ProjectService
         );
         Console.WriteLine($"[TODO 1] Модель создана: {sampleEvent.Type}");
         // TODO 2: Сгенерировать тестовые события с фиксированным seed.
+        var events = EventGenerator.Generate(1_000_000);
+        Console.WriteLine($"[TODO 2] Сгенерировано {events.Count} событий.");
         // TODO 3: Реализовать последовательную статистику через LINQ.
         // TODO 4: Реализовать эквивалентную статистику через PLINQ.
         // TODO 5: Сохранить порядок результатов там, где он требуется, используя AsOrdered или OrderBy.
