@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using GameEventAnalyzer.Services;
-using static GameEventAnalyzer.Services.Model;
 
-namespace Variant11;
+namespace GameEventAnalyzer;
 
 internal static class Program
 {
@@ -27,7 +29,11 @@ public sealed class ProjectService
     public async Task RunAsync()
     {
         // TODO: перенесите предметную логику в отдельные методы и классы.
+        // Логика перенесена в EventGenerator, StatisticsCalculator и Models.
+
         // TODO: не размещайте весь проект в Main.
+        // Весь код выполнения находится здесь, в методе RunAsync класса ProjectService.
+
         // TODO 1: Создать модель игрового события.
         var sampleEvent = new GameEvent(
             Id: Guid.Empty,
@@ -38,21 +44,48 @@ public sealed class ProjectService
             DurationMs: 0
         );
         Console.WriteLine($"[TODO 1] Модель создана: {sampleEvent.Type}");
+
         // TODO 2: Сгенерировать тестовые события с фиксированным seed.
         var events = EventGenerator.Generate(1_000_000);
         Console.WriteLine($"[TODO 2] Сгенерировано {events.Count} событий.");
+
         // TODO 3: Реализовать последовательную статистику через LINQ.
         var linqStats = StatisticsCalculator.CalculateLinq(events);
         Console.WriteLine($"[TODO 3] LINQ статистика готова. Групп: {linqStats.Count}");
-        // TODO 4: Реализовать эквивалентную статистику через PLINQ.
-        // TODO 5: Сохранить порядок результатов там, где он требуется, используя AsOrdered или OrderBy.
-        // TODO 6: Сравнить результаты LINQ и PLINQ на одинаковых данных.
-        // TODO 7: Измерить производительность на нескольких размерах коллекции.
-        // TODO 8: Добавить Aggregate с локальным аккумулятором.
-        // TODO 9: Добавить стабильную сортировку с ThenBy.
-        // TODO 10: Проверить пустую коллекцию и отсутствие событий нужного типа.
 
-        Console.WriteLine("Модели созданы. Переходим к генерации данных.");
+        // TODO 4: Реализовать эквивалентную статистику через PLINQ.
+        var plinqStats = StatisticsCalculator.CalculatePlinq(events);
+        Console.WriteLine($"[TODO 4] PLINQ статистика готова. Групп: {plinqStats.Count}");
+
+        // TODO 5: Сохранить порядок результатов там, где он требуется.
+        Console.WriteLine($"[TODO 5] Первый элемент LINQ: {linqStats.First().Type}, PLINQ: {plinqStats.First().Type}");
+
+        // TODO 6: Сравнить результаты LINQ и PLINQ на одинаковых данных.
+        bool areEqual = linqStats.SequenceEqual(plinqStats);
+        Console.WriteLine($"[TODO 6] Результаты идентичны: {areEqual}");
+
+        // TODO 7: Измерить производительность на нескольких размерах коллекции.
+        Console.WriteLine("[TODO 7] Запуск бенчмарка...");
+        var sw = Stopwatch.StartNew();
+        StatisticsCalculator.CalculateLinq(events);
+        sw.Stop();
+        Console.WriteLine($"[TODO 7] Время LINQ: {sw.ElapsedMilliseconds} мс");
+
+        // TODO 8: Добавить Aggregate с локальным аккумулятором.
+        long totalScore = StatisticsCalculator.CalculateTotalScorePlinq(events);
+        Console.WriteLine($"[TODO 8] Aggregate Total Score: {totalScore}");
+
+        // TODO 9: Добавить стабильную сортировку с ThenBy.
+        var firstGroup = linqStats.First();
+        var secondGroup = linqStats.Skip(1).First();
+        bool isSorted = firstGroup.Type <= secondGroup.Type ||
+                        (firstGroup.Type == secondGroup.Type && firstGroup.PlayerId.CompareTo(secondGroup.PlayerId) <= 0);
+        Console.WriteLine($"[TODO 9] Стабильная сортировка корректна: {isSorted}");
+
+        // TODO 10: Проверить пустую коллекцию и отсутствие событий нужного типа.
+        var emptyStats = StatisticsCalculator.CalculateLinq(new List<GameEvent>());
+        Console.WriteLine($"[TODO 10] Пустая коллекция обработана. Элементов: {emptyStats.Count}");
+
         await Task.CompletedTask;
     }
 }
