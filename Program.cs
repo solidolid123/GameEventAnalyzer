@@ -42,6 +42,8 @@ public sealed class ProjectService
         var events = EventGenerator.Generate(1_000_000);
         Console.WriteLine($"[TODO 2] Сгенерировано {events.Count} событий.");
         // TODO 3: Реализовать последовательную статистику через LINQ.
+        var linqStats = StatisticsCalculator.CalculateLinq(events);
+        Console.WriteLine($"[TODO 3] LINQ статистика готова. Групп: {linqStats.Count}");
         // TODO 4: Реализовать эквивалентную статистику через PLINQ.
         // TODO 5: Сохранить порядок результатов там, где он требуется, используя AsOrdered или OrderBy.
         // TODO 6: Сравнить результаты LINQ и PLINQ на одинаковых данных.
